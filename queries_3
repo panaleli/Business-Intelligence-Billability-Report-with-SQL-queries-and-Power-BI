@@ -1,0 +1,14 @@
+select
+billable,
+count(billable) * 100.0 / (select count(billable) from dimtask) as percentage_of_billable_recorded_hours,
+du.team as teams,
+dd.calendarmonthname as 'Month'
+from dimtask as dt
+join factactual as fc on fc.taskkey = dt.taskkey
+join dimuser as du on  du.user_businesskey = fc.user_uniqueid
+join dimdate as dd on fc.datekey = dd.datekey
+where billable  = 'Billable'
+and (du.team = 'Wise Kingfishers' or du.team = 'Big Beasts')
+and dd.calendaryear = '2021'
+group by dd.calendarmonthname , du.team, billable, dd.calendarmonthstart
+order by du.team, dd.calendarmonthstart;

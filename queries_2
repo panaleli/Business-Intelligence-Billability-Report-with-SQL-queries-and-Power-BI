@@ -1,0 +1,22 @@
+select 
+sum((t.billable_hours)) OVER(ORDER BY t.end_of_month,t.customer) as 'Year-To-Date_hours ',
+t.customer,
+t.month_,
+t.year_,
+t.end_of_month
+ from 
+ ( select 
+ count(recordedtimehours) as 'billable_hours' , 
+  clientname as 'customer',
+  calendarmonthname as 'month_', 
+  calendaryear as 'year_',
+  calendarmonthend as 'end_of_month'
+  from dimtask as dt
+  join factactual as fc on fc.taskkey = dt.taskkey
+  join dimdate as dd on fc.datekey = dd.datekey
+  where dt.billable = 'Billable'
+  and dd.[calendaryear] = '2021'
+  group by  clientname, calendarmonthend, calendarmonthname, calendaryear
+) as t
+group by t.customer, t.billable_hours,t.month_,t.year_,t.end_of_month
+order by   t.customer,   t.end_of_month ASC ;

@@ -1,0 +1,10 @@
+  select 
+  count(recordedtimehours) as 'unbillable_hours' , 
+  calendarmonthname as 'month', 
+  calendaryear as 'year'
+  from dimtask as dt
+  join factactual as fc on fc.taskkey = dt.taskkey
+  join dimdate as dd on fc.datekey = dd.datekey
+  where dt.billable = 'Unbillable'
+  and dd.[calendaryear] = '2021'
+  group by calendarmonthname, calendaryear;
